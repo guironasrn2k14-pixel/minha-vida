@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Casa Geral</title>
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Rotina Dashboard</title>
+<meta name="theme-color" content="#0b0d13">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0f1117;--card:#181b24;--tx:#eceef4;--mut:#9096a8;--ln:#272b38;--ac:#22d3ee}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -67,13 +67,6 @@ main{padding-bottom:100px}
 .bd{font-size:12px;font-weight:700;border-radius:10px;padding:2px 8px;white-space:nowrap}
 .bd.g{background:rgba(34,197,94,.18);color:#4ade80}.bd.y{background:rgba(245,158,11,.18);color:#fbbf24}.bd.r{background:rgba(239,68,68,.2);color:#f87171}.bd.n{background:rgba(148,163,184,.15);color:#94a3b8}
 #ml .row input{max-width:130px}
-.meal{--c:#fb923c}
-#md{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center}
-#md.open{display:flex}
-.mdc{background:var(--card);border:1px solid rgba(34,211,238,.25);width:100%;max-width:640px;max-height:86vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
-.mdc h3{margin:0;font-size:14px;color:var(--mut)}.mdc h4{margin:0 0 4px;font-size:18px}
-#cz button{padding:4px 10px;min-height:32px;font-size:13px}
-.sw{background:transparent;border:0;padding:0 6px;min-height:0;font-size:14px;opacity:.75;cursor:pointer;color:var(--tx)}
 </style>
 </head>
 <body>
@@ -97,7 +90,6 @@ main{padding-bottom:100px}
   <div id="tl"></div>
   <p class="sub" id="fc"></p>
   <p class="sub" id="tp2"></p>
-  <p class="sub" id="vsp"></p>
 </section>
 <section class="card">
   <h2>🎯 MODO FOCO</h2>
@@ -144,7 +136,6 @@ main{padding-bottom:100px}
 <div class="row"><input type="text" id="ri" placeholder="Ingredientes principais"></div>
 <div class="row"><select id="rd"><option>Fácil</option><option>Média</option><option>Difícil</option></select><select id="rs"><option value="5">⭐⭐⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="3">⭐⭐⭐</option><option value="2">⭐⭐</option><option value="1">⭐</option></select><button id="ra">+ Salvar</button></div>
 <ul id="rl"></ul></section></div></div>
-<div id="md"><div class="mdc"><div class="row" style="justify-content:space-between;margin-top:0"><h3 id="mdt"></h3><button class="ghost" id="mdx">✕ Fechar</button></div><h4 id="mdn"></h4><p class="sub" id="mdb"></p><b>Ingredientes</b><ul id="mdi"></ul><b>Preparo</b><p id="mdp"></p><div class="warn" id="mdv"></div></div></div>
 <nav id="nav"><button data-s="vida"><i>🛠️</i>Vida</button><button data-s="renda"><i>💵</i>Renda</button><button data-s="notas"><i>📝</i>Notas</button><button data-s="midia"><i>📰</i>Mídia</button><button data-s="cook"><i>🍳</i>Receitas</button></nav>
 <script>
 const $=s=>document.querySelector(s);
@@ -153,25 +144,20 @@ const ld=(k,d)=>{try{const v=localStorage.getItem('rd2-'+k);return v===null?d:JS
 const sv=(k,v)=>{try{localStorage.setItem('rd2-'+k,JSON.stringify(v))}catch(e){}};
 const pad=n=>String(n).padStart(2,'0');
 const td=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
-let LD=td();
-function checkDay(){if(td()!==LD){LD=td();S.day=new Date().getDay();syncPlan();renderPlan();loadWeather()}}
 const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 
 /* 1. Cabeçalho */
 function tick(){const n=new Date(),o={timeZone:'America/Sao_Paulo'};
   $('#clk').textContent=n.toLocaleTimeString('pt-BR',{...o,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  $('#dt').textContent=n.toLocaleDateString('pt-BR',{...o,weekday:'long',day:'numeric',month:'long'});checkDay()}
+  $('#dt').textContent=n.toLocaleDateString('pt-BR',{...o,weekday:'long',day:'numeric',month:'long'})}
 tick();setInterval(tick,1000);
 const WC=c=>c===0?'Céu limpo':c<=3?'Parcialmente nublado':c<=48?'Neblina':c<=57?'Garoa':c<=67?'Chuva':c<=77?'Neve':c<=82?'Pancadas de chuva':'Tempestade';
-async function loadWeather(){try{
-  const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.5505&longitude=-46.6333&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FSao_Paulo&forecast_days=1',{cache:'no-store'});
-  if(!r.ok)throw new Error('http '+r.status);
+(async()=>{try{
+  const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.55&longitude=-46.63&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FSao_Paulo&forecast_days=1');
   const j=await r.json();
   $('#tp').textContent=Math.round(j.current.temperature_2m)+'°C';$('#wc').textContent=WC(j.current.weather_code);
   $('#mm').textContent='Mín '+Math.round(j.daily.temperature_2m_min[0])+'° · Máx '+Math.round(j.daily.temperature_2m_max[0])+'°';
-}catch(e){if(!/°C/.test($('#tp').textContent))$('#wc').textContent='Clima ao vivo só na versão do GitHub'}}
-loadWeather();setInterval(loadWeather,30*60*1000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkDay();loadWeather()}});
+}catch(e){$('#wc').textContent='Clima ao vivo só na versão do GitHub'}})();
 let wt;function water(){const b=$('#wb');b.style.display='flex';clearTimeout(wt);wt=setTimeout(()=>b.style.display='none',9000);try{navigator.vibrate&&navigator.vibrate(150)}catch(e){}}
 $('#wb').onclick=()=>{$('#wb').style.display='none'};
 setInterval(water,50*60*1000);
@@ -194,14 +180,11 @@ function plan(S){
   S.extras.forEach(x=>{const s=tm(x.s),e=tm(x.e);add('extra',s,e<=s?e+1440:e,x.n,'Compromisso')});
   if(S.ifOn){const s=tm(S.ifT||'13:00'),h=+S.ifH;add('ifood',s,s+h*60,'iFood (rua)','Bloco de '+h+'h');
     if(S.pkOn)add('rest',s+h*60,s+h*60+60,'Descompressão: rua → tela','1h antes do poker: banho, comer, andar 10 min sem celular')}
-  if(S.gymOn&&S.gymT){const s=tm(S.gymT);add('gym',s,s+120,'Academia','Treino de 2h');add('rest',s+120,s+180,'Descompressão pós-treino','1h depois da academia: banho, hidratar, sem tela')}
+  if(S.gymOn&&S.gymT){const s=tm(S.gymT);add('gym',s,s+120,'Academia','Treino de 2h');add('rest',s+120,s+180,'Descompressão + almoço','1h depois da academia: comer, hidratar, sem tela')}
   let studyName=null,st=null;
   if(day>=1&&day<=5)studyName=day===5?S.fri:STUDY[day];
   if(studyName){const s=fit(60,W+30);if(s!==null)st=add('study',s,s+60,'Estudo: '+studyName,'Micro-sprints: 25 min foco · 5 pausa · 25 min foco · 5 pausa');else warns.push('O estudo de 1h não coube hoje.')}
-  if(S.gymOn&&!S.gymT){const s=fit(180,st?st.e:W+30);if(s!==null){add('gym',s,s+120,'Academia','Treino de 2h (horário automático)');add('rest',s+120,s+180,'Descompressão pós-treino','1h depois da academia: banho, hidratar, sem tela')}else warns.push('A academia (2h + 1h de descompressão) não coube hoje.')}
-  const delta=(day-new Date().getDay()+7)%7,cd=cicloDia(delta),TR=delta===0?ldT():{};
-  [['a','Almoço','🍽️',720,'almoco'],['j','Jantar','🌙',1140,'jantar']].forEach(([k,n,ic,from,f])=>{const ci=((cd-1+(TR[k]||0))%14)+1,r=PLANO_REFEICOES_14_DIAS[ci-1][f],d=Math.max(25,r.tempo+15),s=fit(d,from);
-    if(s!==null){const b=add('meal',s,s+d,ic+' '+n+' (Dia '+ci+'/14): '+r.titulo+' · '+MODO[r.modo]+' '+r.modo,r.tempo+' min · toque no nome para ver a receita');b.m=k;b.cd=ci}else warns.push(n+' não coube hoje.')});
+  if(S.gymOn&&!S.gymT){const s=fit(180,st?st.e:W+30);if(s!==null){add('gym',s,s+120,'Academia','Treino de 2h (horário automático)');add('rest',s+120,s+180,'Descompressão + almoço','1h depois da academia: comer, hidratar, sem tela')}else warns.push('A academia (2h + 1h de descompressão) não coube hoje.')}
   if(S.pkOn){let d=+S.pkH*60,from=S.pkT?tm(S.pkT):1200,s=null;
     for(;d>=120;d-=30){s=fit(d,from);if(s!==null)break}
     if(s!==null){add('poker',s,s+d,'Poker (grind)','Sessão de '+dur(d)+'. Alarme para parar no fim.');if(d<+S.pkH*60)warns.push('Poker reduzido para '+dur(d)+' para respeitar o teto de 01:00.')}
@@ -218,12 +201,12 @@ function plan(S){
 function renderPlan(){
   const R=plan(S),has=t=>R.B.some(b=>b.t===t);
   $('#warns').innerHTML=R.warns.map(w=>'<div class="warn">⚠️ '+esc(w)+'</div>').join('');
-  $('#tl').innerHTML=R.out.map(b=>'<div class="blk '+b.t+'"'+(b.m?' data-ml="'+b.m+'" data-cd="'+b.cd+'" style="cursor:pointer"':'')+'><div class="t">'+(b.t==='sleep'?fmt(b.s):fmt(b.s)+' – '+fmt(b.e))+'</div><div class="n">'+esc(b.n)+(b.m?' <button class="sw" data-sw="'+b.m+'" aria-label="Trocar receita">🔄</button>':'')+'</div><div class="d">'+esc(b.d)+'</div></div>').join('');
+  $('#tl').innerHTML=R.out.map(b=>'<div class="blk '+b.t+'"><div class="t">'+(b.t==='sleep'?fmt(b.s):fmt(b.s)+' – '+fmt(b.e))+'</div><div class="n">'+esc(b.n)+'</div><div class="d">'+esc(b.d)+'</div></div>').join('');
   const f=[];if(R.studyName)f.push('📚 '+R.studyName);if(has('ifood'))f.push('🛵 iFood');if(has('gym'))f.push('🏋️ Academia');if(!f.length)f.push('🌿 Dia leve');f.push('😴 Dormir até 01:00');
   $('#fc').innerHTML='<b>🎯 Foco do dia:</b> '+f.join(' · ');
   const t=[];if(has('gym'))t.push('Depois da academia: banho, comer e água.');if(has('ifood')&&has('poker'))t.push('Da rua para a tela: banho, comer e andar 10 min sem celular.');else if(has('poker'))t.push('Antes do poker: respire 5 min e ponha o celular em modo foco.');t.push('Telas desligadas 30 min antes de dormir.');
   $('#tp2').innerHTML='<b>⚡ Transição:</b> '+t.slice(0,2).join(' ');
-  $('#friL').classList.toggle('hide',+S.day!==5);renderCiclo();
+  $('#friL').classList.toggle('hide',+S.day!==5);
   $('#xl').innerHTML=S.extras.map((x,i)=>'<span class="tag">'+esc(x.n)+' '+x.s+'–'+x.e+'<button data-i="'+i+'" aria-label="Remover">×</button></span>').join('');
 }
 function syncPlan(){$('#day').value=S.day;$('#wake').value=S.wake;$('#fri').value=S.fri;$('#gymOn').checked=S.gymOn;$('#gymT').value=S.gymT;$('#ifOn').checked=S.ifOn;$('#ifT').value=S.ifT;$('#ifH').value=S.ifH;$('#pkOn').checked=S.pkOn;$('#pkH').value=S.pkH;$('#pkT').value=S.pkT}
@@ -309,71 +292,15 @@ $('#va').onclick=()=>{const d=$('#vd').value;if(!d)return;const t=$('#vt').value
 $('#vl').addEventListener('click',e=>{const i=e.target.dataset.i;if(i===undefined)return;V.splice(+i,1);sv('venc',V);renderV()});
 /* Culinária */
 let R=ld('rec',[]);
-function renderR(){$('#rl').innerHTML=R.map((r,i)=>'<li><span><b>'+esc(r.n)+'</b> '+'⭐'.repeat(r.s)+'<br><small class="sub">'+esc(r.d)+(r.i?' · '+esc(r.i):'')+' · '+r.t.slice(8)+'/'+r.t.slice(5,7)+'</small>'+(r.p?'<br><small class="sub">'+esc(r.p)+'</small>':'')+'</span><button data-i="'+i+'" aria-label="Remover">×</button></li>').join('')||'<li class="sub">Nenhuma receita ainda.</li>'}
+function renderR(){$('#rl').innerHTML=R.map((r,i)=>'<li><span><b>'+esc(r.n)+'</b> '+'⭐'.repeat(r.s)+'<br><small class="sub">'+esc(r.d)+(r.i?' · '+esc(r.i):'')+' · '+r.t.slice(8)+'/'+r.t.slice(5,7)+'</small></span><button data-i="'+i+'" aria-label="Remover">×</button></li>').join('')||'<li class="sub">Nenhuma receita ainda.</li>'}
 $('#ra').onclick=()=>{const n=$('#rn').value.trim();if(!n)return;R.unshift({n,i:$('#ri').value.trim(),d:$('#rd').value,s:+$('#rs').value,t:td()});sv('rec',R);$('#rn').value='';$('#ri').value='';renderR()};
 $('#rl').addEventListener('click',e=>{const i=e.target.dataset.i;if(i===undefined)return;R.splice(+i,1);sv('rec',R);renderR()});
 /* Navegação */
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const el=document.getElementById('s-'+b.dataset.s),was=el.classList.contains('open');
   document.querySelectorAll('.sheet').forEach(x=>x.classList.remove('open'));document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('on'));
   if(!was){el.classList.add('open');b.classList.add('on');el.scrollTop=0}});
-
-/* Cardápio rotativo de 14 dias */
-const M_=(titulo,tempo,modo,ing,preparo,aviso_vespera='')=>({titulo,tempo,modo,ingredientes:ing.split('|'),preparo,aviso_vespera});
-const MODO={Rápido:'⚡',Prático:'🥘',Chef:'👨‍🍳',Sobra:'⚡'};
-const PLANO_REFEICOES_14_DIAS=[
-{dia:1,almoco:M_('Filé de frango grelhado + Arroz, Feijão e Salada',25,'Prático','2 filés de frango (1 sobra para o jantar)|Sal, alho, limão|Arroz e feijão cozidos|Alface, tomate, pepino','Tempere os filés com sal, alho e limão. Grelhe 5–6 min por lado em frigideira quente. Sirva 1 com arroz, feijão e salada. Cozinhe o outro até o fim e guarde.','Tire 2 filés de frango do congelador hoje à noite.'),
- jantar:M_('Wrap/Crepioca de Frango Desfiado com Requeijão',10,'Rápido','1 filé de frango cozido (sobra do almoço)|1 tortilha ou 2 ovos + 2 col. sopa de goma|2 col. sopa de requeijão','Desfie o frango e aqueça. Monte no wrap, ou faça a crepioca (ovos + goma, 2 min por lado) e recheie com o requeijão.')},
-{dia:2,almoco:M_('Carne Moída com Batata e Cenoura + Arroz (fazer 4 porções)',30,'Prático','500 g de carne moída|2 batatas e 2 cenouras em cubos|1 cebola, 2 dentes de alho|Sal, pimenta, colorau|Arroz cozido','Refogue cebola e alho e doure a carne. Junte batata, cenoura, 1 xícara de água e os temperos. Tampe e cozinhe 15 min. Separe 3 marmitas: 1 para amanhã, 1 para o Dia 5 (congelar).','Tire 500 g de carne moída do congelador hoje à noite.'),
- jantar:M_('Omelete Rústico de Abobrinha e Mussarela',10,'Rápido','3 ovos|1/2 abobrinha ralada|Mussarela fatiada|Sal e pimenta','Bata os ovos e misture a abobrinha. Frite em frigideira antiaderente tampada por 3 min, coloque a mussarela, dobre e sirva.')},
-{dia:3,almoco:M_('Marmita Carne Moída c/ Legumes + Feijão',5,'Sobra','1 marmita de carne moída com legumes (Dia 2)|Feijão cozido','Aqueça a marmita e o feijão no micro por 2–3 min.'),
- jantar:M_('Macarrão Penne Express c/ Frango e Tomate',15,'Rápido','300 g de penne (2 porções)|2 filés de frango em cubos|2 tomates picados ou molho de tomate|Alho, sal, azeite','Cozinhe o macarrão. Doure o frango com alho, junte o tomate por 5 min e misture ao macarrão. Guarde metade para o almoço de amanhã.','Tire 2 filés de frango do congelador hoje à noite.')},
-{dia:4,almoco:M_('Restante do Macarrão Express + 2 Ovos',10,'Sobra','Macarrão Express guardado|2 ovos','Frite os 2 ovos. Aqueça o macarrão e sirva junto.'),
- jantar:M_('Yakimeshi Saudável de Arroz Dormido e Frango',20,'Prático','2 conchas de arroz cozido de ontem|1 filé de frango em cubos|1/2 cenoura e 1/2 abobrinha em cubinhos|1 ovo|2 col. sopa de shoyu|Cebolinha','Doure o frango, junte os legumes e o arroz soltando os grãos, em fogo alto. Empurre para o lado, mexa o ovo e misture com o shoyu. Finalize com cebolinha.','Tire 1 filé de frango do congelador hoje à noite.')},
-{dia:5,almoco:M_('Marmita Carne Moída Congelada + Arroz',5,'Sobra','1 marmita de carne moída congelada (Dia 2)|Arroz cozido','Aqueça a marmita no micro por 4–5 min, mexendo no meio. Sirva com o arroz.','Passe a marmita do congelador para a geladeira hoje à noite.'),
- jantar:M_('Crepioca de Queijo e Ovo Mexido',10,'Rápido','3 ovos|2 col. sopa de goma de tapioca|Queijo fatiado|Sal','Faça a crepioca com 1 ovo e a goma (2 min por lado) com o queijo. Mexa os outros 2 ovos em fogo baixo até ficarem cremosos e coloque dentro.')},
-{dia:6,almoco:M_('Sobrecoxa Glaceada no Mel/Shoyu + Batata Rústica',45,'Chef','3 sobrecoxas sem pele (guarde 1 para o jantar)|2 col. sopa de shoyu|1 col. sopa de mel|Alho|2 batatas em gomos|Azeite, sal, páprica','Misture shoyu, mel e alho e marine as sobrecoxas por 15 min. Asse com as batatas temperadas em azeite a 200 °C por 30 min, regando a sobrecoxa com o molho no meio do tempo.','Tire 3 sobrecoxas do congelador hoje à noite.'),
- jantar:M_('Wrap de Sobrecoxa Desfiada c/ Rúcula',10,'Rápido','1 sobrecoxa assada (sobra do almoço)|1 tortilha|Rúcula|Requeijão ou iogurte natural','Desfie a sobrecoxa e aqueça rapidamente. Monte na tortilha com a rúcula e o requeijão e enrole.')},
-{dia:7,almoco:M_('Abobrinha Recheada Gratinada c/ Carne Moída',45,'Chef','2 abobrinhas médias (metade sobra para o jantar)|300 g de carne moída|1/2 cebola, alho, tomate picado|Queijo ralado ou mussarela|Sal e pimenta','Corte as abobrinhas ao meio e retire o miolo. Refogue a carne com cebola, alho, miolo picado e tomate. Recheie, cubra com queijo e asse a 200 °C por 25 min até gratinar.','Tire 300 g de carne moída do congelador hoje à noite.'),
- jantar:M_('Sobra da Abobrinha ou Omelete Leve',10,'Sobra','1 metade de abobrinha recheada que sobrou (ou 3 ovos e queijo)','Aqueça a abobrinha no forno ou no micro por 3 min. Se não sobrou, faça um omelete simples com 3 ovos e queijo.')},
-{dia:8,almoco:M_('Cubos de Frango Acebolados + Arroz e Feijão',20,'Prático','2 filés de frango em cubos (metade sobra para o jantar)|1 cebola em rodelas|Alho, sal, limão|Arroz e feijão cozidos','Tempere o frango com alho, sal e limão. Doure em fogo alto, junte a cebola e cozinhe 5 min até murchar. Sirva com arroz e feijão.','Tire 2 filés de frango do congelador hoje à noite.'),
- jantar:M_('Tapioca ou Wrap Cremoso de Frango',10,'Rápido','Frango do almoço desfiado|Goma de tapioca ou 1 tortilha|2 col. sopa de requeijão|Orégano','Misture o frango com o requeijão e o orégano. Faça a tapioca na frigideira (1 min por lado) ou use a tortilha e recheie.')},
-{dia:9,almoco:M_('Penne ao Ragu Rápido de Carne Moída e Passata',25,'Prático','300 g de penne (2 porções)|300 g de carne moída|1 xícara de passata de tomate|1/2 cebola, alho|Sal, orégano','Refogue cebola e alho e doure a carne. Junte a passata e cozinhe 10 min. Misture ao macarrão cozido. Guarde metade para o almoço de amanhã.','Tire 300 g de carne moída do congelador hoje à noite.'),
- jantar:M_('Ovos Mexidos Cremosos na Tortilha Tostada',10,'Rápido','3 ovos|1 tortilha|1 col. sopa de requeijão|Sal','Toste a tortilha em frigideira seca. Mexa os ovos em fogo baixo com o requeijão até ficarem cremosos e sirva sobre a tortilha.')},
-{dia:10,almoco:M_('Marmita Macarrão ao Ragu c/ Queijo',5,'Sobra','Macarrão ao ragu guardado|Queijo ralado','Aqueça no micro por 3 min, cubra com queijo ralado e leve mais 30 s.'),
- jantar:M_('Purê Rústico de Batata c/ Frango no Alho',20,'Prático','3 batatas (2 porções)|2 filés de frango em cubos|3 dentes de alho|Leite ou manteiga|Sal','Cozinhe as batatas e amasse com um pouco de leite ou manteiga, deixando rústico. Doure o frango com o alho. Sirva sobre o purê. Guarde metade para amanhã.','Tire 2 filés de frango do congelador hoje à noite.')},
-{dia:11,almoco:M_('Restante do Purê de Batata c/ Frango',5,'Sobra','Purê e frango guardados','Aqueça no micro por 3 min, mexendo no meio.'),
- jantar:M_('Arroz de Frigideira Gratinado Express',15,'Rápido','2 conchas de arroz cozido|1 ovo|Mussarela ou queijo ralado|1 tomate picado, sal','Misture o arroz com o ovo e o tomate. Aqueça na frigideira por 3 min, cubra com queijo, tampe até derreter e gratine.')},
-{dia:12,almoco:M_('Frango Grelhado + Arroz, Feijão e Batata Sauté',20,'Prático','1 filé de frango|1 batata em cubos|Arroz e feijão cozidos|Alho, sal, limão, azeite','Grelhe o frango temperado. Salteie a batata em cubos com azeite e alho até dourar. Sirva com arroz e feijão.','Tire 1 filé de frango do congelador hoje à noite.'),
- jantar:M_('Crepioca Estilo Pizza de Queijo e Tomate',10,'Rápido','2 ovos|2 col. sopa de goma de tapioca|Molho de tomate ou passata|Mussarela|Orégano','Faça a crepioca, cubra com molho, mussarela e orégano. Tampe por 2 min até derreter.')},
-{dia:13,almoco:M_('Frango Crocante Empanado na Aveia + Molho Rústico',40,'Chef','2 filés de frango em tiras (metade sobra para o jantar)|1 ovo batido|1/2 xícara de aveia em flocos|Sal, páprica|Tomate, cebola e alho para o molho','Passe as tiras no ovo e na aveia temperada. Asse a 200 °C por 20 min, virando no meio (ou frite em pouco óleo). Molho: refogue cebola, alho e tomate picado por 10 min.','Tire 2 filés de frango do congelador hoje à noite.'),
- jantar:M_('Wrap Crocante c/ Tiras de Frango Empanado',10,'Rápido','Tiras de frango empanado do almoço|1 tortilha|Alface|Molho rústico ou iogurte','Aqueça as tiras no forno ou na frigideira para voltar a crocância. Monte no wrap com alface e molho.')},
-{dia:14,almoco:M_('Frittata Espanhola de Batata e Queijo',25,'Prático','2 batatas em fatias finas|4 ovos|1/2 cebola|Queijo|Sal, azeite','Doure batata e cebola em azeite até ficarem macias (10 min). Misture aos ovos batidos com sal e queijo. Cozinhe tampado em fogo baixo por 8 min e vire para dourar o outro lado.'),
- jantar:M_('Panqueca Fit de Banana, Ovo e Aveia',10,'Rápido','1 banana madura|2 ovos|3 col. sopa de aveia|Canela','Amasse a banana e misture os ovos, a aveia e a canela. Doure em frigideira antiaderente, 2 min por lado.')}
-];
-const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
-const lss=(k,v)=>{try{localStorage.setItem(k,String(v))}catch(e){}};
-const d0=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d};
-let CI=parseInt(lsg('ciclo_refeicoes_inicio'));if(isNaN(CI)){CI=d0(Date.now()).getTime();lss('ciclo_refeicoes_inicio',CI)}
-let CO=parseInt(lsg('ciclo_refeicoes_offset'));if(isNaN(CO))CO=0;
-const cicloDia=delta=>{const p=Math.round((d0(Date.now()).getTime()-CI)/864e5)+delta+CO;return((p%14)+14)%14+1};
-function renderCiclo(){const delta=(+S.day-new Date().getDay()+7)%7;const nx=PLANO_REFEICOES_14_DIAS[cicloDia(delta+1)-1],av=[nx.almoco,nx.jantar].map(r=>r.aviso_vespera).filter(Boolean);
-  $('#vsp').innerHTML=av.length?'<b>🌙 Véspera:</b> '+av.map(esc).join(' '):''}
-function openM(k,cd){const r=PLANO_REFEICOES_14_DIAS[cd-1][k==='a'?'almoco':'jantar'];
-  $('#mdt').textContent=(k==='a'?'🍽️ Almoço':'🌙 Jantar')+' · Dia '+cd+'/14';$('#mdn').textContent=r.titulo;$('#mdb').textContent=MODO[r.modo]+' '+r.modo+' · '+r.tempo+' min';
-  $('#mdi').innerHTML=r.ingredientes.map(x=>'<li>'+esc(x)+'</li>').join('');$('#mdp').textContent=r.preparo;
-  $('#mdv').textContent=r.aviso_vespera?'🌙 Véspera: '+r.aviso_vespera:'';$('#mdv').classList.toggle('hide',!r.aviso_vespera);$('#md').classList.add('open')}
-const ldT=()=>{try{const t=JSON.parse(lsg('ciclo_refeicoes_trocas')||'null');return t&&t.d===td()?t:{d:td()}}catch(e){return{d:td()}}};
-function trocar(k){const T=ldT();T[k]=(T[k]||0)+1;lss('ciclo_refeicoes_trocas',JSON.stringify(T));renderPlan()}
-$('#tl').addEventListener('click',e=>{const sw=e.target.closest('[data-sw]');if(sw){trocar(sw.dataset.sw);return}const el=e.target.closest('[data-ml]');if(el)openM(el.dataset.ml,+el.dataset.cd)});
-$('#mdx').onclick=()=>$('#md').classList.remove('open');
-$('#md').addEventListener('click',e=>{if(e.target.id==='md')$('#md').classList.remove('open')});
-/* Semente do caderno: só se estiver vazio, uma vez */
-(function(){if(ld('rec_seed',false))return;sv('rec_seed',true);if(R.length)return;
-  const seen={},DD={Rápido:'Fácil',Prático:'Média',Chef:'Difícil'};
-  PLANO_REFEICOES_14_DIAS.forEach(x=>[x.almoco,x.jantar].forEach(r=>{if(r.modo==='Sobra'||seen[r.titulo])return;seen[r.titulo]=1;R.push({n:r.titulo,i:r.ingredientes.join(', '),p:r.preparo,d:DD[r.modo],s:0,t:td()})}));
-  sv('rec',R)})();
 syncPlan();renderPlan();renderF();renderI();renderH();renderW();renderM();renderV();renderR();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 </script>
 </body>
 </html>
